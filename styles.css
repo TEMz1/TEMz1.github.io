@@ -1,0 +1,310 @@
+ body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background-attachment: fixed;
+      text-align: center;
+      color: #fff;
+      height: 100vh;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Animated background elements */
+    .bg-animation {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .cloud {
+      position: absolute;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50px;
+      opacity: 0.6;
+    }
+
+    .cloud:before,
+    .cloud:after {
+      content: '';
+      position: absolute;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50px;
+    }
+
+    .cloud1 {
+      width: 100px;
+      height: 40px;
+      top: 20%;
+      left: -100px;
+      animation: float-cloud 20s infinite linear;
+    }
+
+    .cloud1:before {
+      width: 50px;
+      height: 50px;
+      top: -25px;
+      left: 10px;
+    }
+
+    .cloud1:after {
+      width: 60px;
+      height: 40px;
+      top: -15px;
+      right: 10px;
+    }
+
+    .cloud2 {
+      width: 80px;
+      height: 30px;
+      top: 40%;
+      left: -80px;
+      animation: float-cloud 25s infinite linear;
+      animation-delay: -10s;
+    }
+
+    .cloud2:before {
+      width: 40px;
+      height: 40px;
+      top: -20px;
+      left: 15px;
+    }
+
+    .cloud2:after {
+      width: 50px;
+      height: 30px;
+      top: -10px;
+      right: 15px;
+    }
+
+    @keyframes float-cloud {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(calc(100vw + 100px)); }
+    }
+
+    .stars {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: rgba(255, 255, 255, 0.8);
+      border-radius: 50%;
+      animation: twinkle 3s infinite;
+    }
+
+    .star1 { top: 10%; left: 20%; animation-delay: 0s; }
+    .star2 { top: 15%; left: 80%; animation-delay: 1s; }
+    .star3 { top: 30%; left: 60%; animation-delay: 2s; }
+    .star4 { top: 25%; left: 30%; animation-delay: 0.5s; }
+    .star5 { top: 45%; left: 90%; animation-delay: 1.5s; }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.3; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.2); }
+    }
+
+    #game-container {
+      width: 300px;
+      height: 630px;
+      background-image: url('images/road.jpg');
+      animation: moveRoad 2s linear infinite;
+      background-repeat: repeat-y;
+      background-position: center;
+      background-size: cover;
+      margin: 10px auto;
+      position: relative;
+      overflow: hidden;
+      border: 3px solid #444;
+      border-radius: 10px;
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.7);
+    }
+
+    @keyframes moveRoad {
+      0% { background-position-y: 0px; }
+      100% { background-position-y: 630px; }
+    }
+
+    #player {
+      width: 60px;
+      height: 80px;
+      position: absolute;
+      bottom: 20px;
+      background: url('images/hero.png') no-repeat center;
+      background-size: contain;
+      transition: left 0.2s ease;
+    }
+
+    .obstacle {
+      position: absolute;
+      background: url('images/villain.png') no-repeat center;
+      background-size: contain;
+      width: 60px;
+      height: 80px;
+    }
+
+    #finish-line {
+      position: absolute;
+      width: 300px;
+      height: 40px;
+      background: url('images/finish.png') no-repeat center;
+      background-size: cover;
+      display: none;
+    }
+
+    #cam-container {
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+      border: 2px solid #fff;
+      border-radius: 6px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+      background: #000;
+    }
+
+    canvas {
+      transform: scaleX(-1);
+    }
+
+    h1 {
+      font-size: 28px;
+      margin: 10px 0;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #feca57);
+      background-size: 400% 400%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: gradient-shift 3s ease infinite;
+    }
+
+    @keyframes gradient-shift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    #score, #highscore {
+      display: none;
+    }
+
+    /* Countdown Overlay */
+    #countdown-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      backdrop-filter: blur(5px);
+    }
+
+    #countdown-number {
+      font-size: 120px;
+      font-weight: bold;
+      color: #fff;
+      text-shadow: 0 0 30px rgba(255, 255, 255, 0.8);
+      animation: countdown-pulse 1s ease-in-out;
+    }
+
+    @keyframes countdown-pulse {
+      0% { transform: scale(0.5); opacity: 0; }
+      50% { transform: scale(1.2); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    /* Modal Styles */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+      backdrop-filter: blur(10px);
+    }
+
+    .modal-content {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 40px;
+      border-radius: 20px;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      animation: modal-appear 0.5s ease-out;
+      max-width: 500px;
+      margin: 20px;
+    }
+
+    @keyframes modal-appear {
+      0% { transform: scale(0.5) rotate(-10deg); opacity: 0; }
+      100% { transform: scale(1) rotate(0deg); opacity: 1; }
+    }
+
+    .modal h2 {
+      font-size: 48px;
+      margin: 0 0 20px 0;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    .modal p {
+      font-size: 24px;
+      margin: 20px 0;
+      opacity: 0.9;
+    }
+
+    .modal button {
+      background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+      border: none;
+      padding: 15px 30px;
+      font-size: 18px;
+      color: white;
+      border-radius: 30px;
+      cursor: pointer;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s ease;
+      margin: 10px;
+    }
+
+    .modal button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+    }
+
+    .win-modal .modal-content {
+      background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
+    }
+
+    .lose-modal .modal-content {
+      background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+    }
+
+    .celebration {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: #ffd700;
+      border-radius: 50%;
+      animation: celebrate 2s ease-out infinite;
+    }
+
+    @keyframes celebrate {
+      0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(-200px) rotate(360deg); opacity: 0; }
+    }
+
+    #scoreboard {
+      margin-top: 10px;
+      padding: 10px;
+      background: rgba(0, 0, 0, 0.7);
+      border-radius: 5px;
+    }

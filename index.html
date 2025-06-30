@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="referrer" content="no-referrer">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎮 Car Gesture Game - Zoom Zoom! 🎮</title>
+    <link rel="icon" type="image/png" href="images/iconnWeb.png">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.10.1/sweetalert2.all.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html, body {
+            overflow: hidden;
+            scroll-behavior: auto;
+        }
+        body {
+            font-family: 'Comic Sans MS', cursive, Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            overflow: hidden;
+            position: relative;
+        }
+        .particle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            animation: float 6s infinite linear;
+        }
+        @keyframes float {
+            0% { transform: translateY(100vh) translateX(0) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100px) translateX(100px) rotate(360deg); opacity: 0; }
+        }
+        .welcome-container {
+            text-align: center;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        .game-title {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        @keyframes glow {
+            0% { filter: drop-shadow(0 0 5px #FFD700); }
+            100% { filter: drop-shadow(0 0 20px #FFA500); }
+        }
+        .game-subtitle {
+            font-size: 1.1em;
+            margin-bottom: 25px;
+            opacity: 0.9;
+            line-height: 1.4;
+        }
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+        }
+        .fun-button {
+            padding: 12px 35px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+            min-width: 220px;
+        }
+        .fun-button:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+        .fun-button:hover:before {
+            left: 100%;
+        }
+        .btn-tutorial {
+            background: linear-gradient(45deg, #FF6B6B, #FF8E8E);
+            color: white;
+        }
+        .btn-start {
+            background: linear-gradient(45deg, #4ECDC4, #44A08D);
+            color: white;
+            font-size: 1.2em;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        .fun-button:hover {
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+        .fun-button:active {
+            transform: translateY(0) scale(0.98);
+        }
+        .car-decoration {
+            position: absolute;
+            font-size: 1.5em;
+            opacity: 0.2;
+            animation: drive 8s linear infinite;
+        }
+        @keyframes drive {
+            0% { transform: translateX(-100vw); }
+            100% { transform: translateX(100vw); }
+        }
+        .car-decoration:nth-child(1) {
+            top: 15%;
+            animation-delay: 0s;
+        }
+        .car-decoration:nth-child(2) {
+            top: 80%;
+            animation-delay: 4s;
+        }
+        @media (max-width: 768px) {
+            .game-title { font-size: 2em; }
+            .welcome-container { padding: 20px; margin: 10px; }
+            .game-subtitle { font-size: 1em; }
+            .fun-button { min-width: 180px; font-size: 1em; }
+        }
+        @media (max-height: 600px) {
+            .welcome-container { padding: 15px; max-height: 95vh; }
+            .game-title { font-size: 2em; margin-bottom: 10px; }
+            .game-subtitle { font-size: 0.9em; margin-bottom: 15px; }
+            .button-container { gap: 10px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="particle" style="left: 10%; animation-delay: 0s;"></div>
+    <div class="particle" style="left: 20%; animation-delay: 1s;"></div>
+    <div class="particle" style="left: 30%; animation-delay: 2s;"></div>
+    <div class="particle" style="left: 40%; animation-delay: 3s;"></div>
+    <div class="particle" style="left: 50%; animation-delay: 4s;"></div>
+    <div class="particle" style="left: 60%; animation-delay: 5s;"></div>
+    <div class="particle" style="left: 70%; animation-delay: 0.5s;"></div>
+    <div class="particle" style="left: 80%; animation-delay: 1.5s;"></div>
+    <div class="car-decoration">🚗</div>
+    <div class="car-decoration">🏎️</div>
+    <div class="welcome-container">
+        <h1 class="game-title">🎮 Car Gesture Game</h1>
+        <p class="game-subtitle">
+            🌟 Zoom zoom! Welcome to a super fun game! 🌟<br><br>
+            Use your body to steer a cool car with your camera.<br><br>
+            Dodge obstacles and race to win! 🏆
+        </p>
+        <div class="button-container">
+            <button class="fun-button btn-tutorial" onclick="showTutorial()">📚 How to Play</button>
+            <button class="fun-button btn-start" onclick="showModeSelection()">🚀 Start Racing</button>
+        </div>
+    </div>
+    <script>
+
+        const sfxClick = new Audio('sound/click.mp3');
+        const bgm = new Audio('sound/bgmHomepage.mp3');
+        bgm.loop = true;          // Biar muter terus
+        bgm.volume = 0.5;     
+        let bgmStarted = false;
+
+        function playBGM() {
+            if (!bgmStarted) {
+        bgm.play();
+        bgmStarted = true;
+            }
+        }
+
+        function createParticles() {
+            for (let i = 0; i < 10; i++) {
+                setTimeout(() => {
+                    const particle = document.createElement('div');
+                    particle.className = 'particle';
+                    particle.style.left = Math.random() * 100 + '%';
+                    particle.style.animationDelay = Math.random() * 6 + 's';
+                    particle.style.animationDuration = (4 + Math.random() * 4) + 's';
+                    document.body.appendChild(particle);
+                    setTimeout(() => {
+                        if (particle.parentNode) particle.remove();
+                    }, 8000);
+                }, i * 300);
+            }
+        }
+        setInterval(createParticles, 12000);
+        createParticles();
+        
+        function showTutorial() {
+            playBGM();
+            sfxClick.currentTime = 0;
+            sfxClick.play();
+            let step = 1;
+            const showStep = () => {
+                const content = [
+                    `<div style="text-align: center; color: #333; font-size: 0.95em; max-height: 70vh; overflow: hidden;">
+                        <h3 style="color: #4ECDC4; font-size: 1.4em; margin-bottom: 12px;">🚗 Steer Like a Pro!</h3>
+                        <p style="margin-bottom: 15px; font-size: 1em;">Pretend you're holding a steering wheel! 👐</p>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; margin-bottom: 15px;">
+                            <div style="background: linear-gradient(135deg, #fef2f2, #fee2e2); border-radius: 12px; padding: 12px; border: 2px solid #ef4444; position: relative; overflow: hidden;">
+                                <img src="images/steerLeft.gif" alt="Left Gesture" style="width: 200px; height: 200px; object-fit: contain;" />
+                                
+                                <div style="font-weight: bold; color: #ef4444; font-size: 1em; margin-bottom: 2px;">LEFT</div>
+                                <div style="font-size: 0.8em; color: #666; line-height: 1.2;">Lean your body left to turn left!</div>
+                            </div>
+                            <div style="background: linear-gradient(135deg, #f0fdf4, #dcfce7); border-radius: 12px; padding: 12px; border: 2px solid #22c55e; position: relative; overflow: hidden;">
+                                <img src="images/steerStay.gif" alt="Left Gesture" style="width: 200px; height: 200px; object-fit: contain;" />
+                                <div style="font-weight: bold; color: #22c55e; font-size: 1em; margin-bottom: 4px;">STRAIGHT</div>
+                                <div style="font-size: 0.8em; color: #666; line-height: 1.2;">Stand straight to go forward!</div>
+                            </div>
+                            <div style="background: linear-gradient(135deg, #eff6ff, #dbeafe); border-radius: 12px; padding: 12px; border: 2px solid #3b82f6; position: relative; overflow: hidden;">
+                                <img src="images/steerRight.gif" alt="Left Gesture" style="width: 200px; height: 200px; object-fit: contain;" />
+                                <div style="font-weight: bold; color: #3b82f6; font-size: 1em; margin-bottom: 4px;">RIGHT</div>
+                                <div style="font-size: 0.8em; color: #666; line-height: 1.2;">Lean your body right to turn right!</div>
+                            </div>
+                        </div>
+                        <div style="background: linear-gradient(135deg, #fef3c7, #fde68a); padding: 12px; border-radius: 10px; border: 2px solid #f59e0b;">
+                            <div style="font-size: 0.9em; color: #92400e; font-weight: bold;">💡 Tip: Stand straight before turning again!</div>
+                        </div>
+                    </div>`,
+                    `<div style="text-align: center; color: #333; font-size: 0.95em; max-height: 70vh; overflow: hidden;">
+                        <h3 style="color: #4ECDC4; font-size: 1.4em; margin-bottom: 15px;">🏁 Race to Win!</h3>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px;">
+                            <div style="background: linear-gradient(135deg, #fee2e2, #fecaca); padding: 15px; border-radius: 12px; border: 2px solid #ef4444;">
+                                <div style="font-size: 2em; margin-bottom: 8px;">🚗</div>
+                                <div style="font-weight: bold; color: #ef4444; font-size: 1em;">DODGE</div>
+                                <div style="font-size: 0.85em; color: #666;">Avoid red cars coming down!</div>
+                            </div>
+                            <div style="background: linear-gradient(135deg, #dcfce7, #bbf7d0); padding: 15px; border-radius: 12px; border: 2px solid #22c55e;">
+                                <div style="font-size: 2em; margin-bottom: 8px;">🏁</div>
+                                <div style="font-weight: bold; color: #22c55e; font-size: 1em;">WIN</div>
+                                <div style="font-size: 0.85em; color: #666;">Reach the finish line!</div>
+                            </div>
+                        </div>
+                        <div style="background: linear-gradient(135deg, #e0f2fe, #b3e5fc); padding: 12px; border-radius: 10px; border: 2px solid #0288d1;">
+                            <div style="font-size: 0.9em; color: #01579b; font-weight: bold;">⚡ Stay quick and be careful!</div>
+                        </div>
+                    </div>`,
+                    `<div style="text-align: center; color: #333; font-size: 0.95em; max-height: 70vh; overflow: hidden;">
+                        <h3 style="color: #4ECDC4; font-size: 1.4em; margin-bottom: 15px;">⚡ Pick Your Speed!</h3>
+                        <div style="display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 15px;">
+                            <div style="background: linear-gradient(135deg, #e0f2fe, #b3e5fc); padding: 12px; border-radius: 10px; border: 2px solid #0288d1; display: flex; align-items: center; gap: 12px;">
+                                <div style="font-size: 2em; align:center;">😊</div>
+                                <div style="text-align: center; flex: 1;">
+                                    <div style="font-weight: bold; color: #01579b; font-size: 1em;">EASY</div>
+                                    <div style="font-size: 0.85em; color: #666;">Nice and slow - perfect for beginners!</div>
+                                </div>
+                            </div>
+                            <div style="background: linear-gradient(135deg, #fef3c7, #fde68a); padding: 12px; border-radius: 10px; border: 2px solid #f59e0b; display: flex; align-items: center; gap: 12px;">
+                                <div style="font-size: 2em;">😎</div>
+                                <div style="text-align: center; flex: 1;">
+                                    <div style="font-weight: bold; color: #92400e; font-size: 1em;">MEDIUM</div>
+                                    <div style="font-size: 0.85em; color: #666;">A bit faster - good challenge!</div>
+                                </div>
+                            </div>
+                            <div style="background: linear-gradient(135deg, #fee2e2, #fecaca); padding: 12px; border-radius: 10px; border: 2px solid #ef4444; display: flex; align-items: center; gap: 12px;">
+                                <div style="font-size: 2em;">🤯</div>
+                                <div style="text-align: center; flex: 1;">
+                                    <div style="font-weight: bold; color: #dc2626; font-size: 1em;">HARD</div>
+                                    <div style="font-size: 0.85em; color: #666;">Super speedy - for experts only!</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="background: linear-gradient(135deg, #fef3c7, #fde68a); padding: 12px; border-radius: 10px; border: 2px solid #f59e0b;">
+                            <div style="font-size: 0.9em; color: #92400e; font-weight: bold;">🌟 Tip: Play in a bright room for best results! 🌟</div>
+                        </div>
+                    </div>`
+                ];
+                
+                // Configure buttons based on step
+                let buttons = {};
+                
+                if (step === 1) {
+                    // First step: Back to main menu + Next
+                    buttons = {
+                        showConfirmButton: false,
+                        showCancelButton: true,
+                        cancelButtonText: '🏠 Back to Menu',
+                        cancelButtonColor: '#6C757D',
+                        showDenyButton: true,
+                        denyButtonText: 'Next ➡️',
+                        denyButtonColor: '#4ECDC4'
+                    };
+                } else if (step === 2) {
+                    // Middle step: Back + Next
+                    buttons = {
+                        showConfirmButton: false,
+                        showCancelButton: true,
+                        cancelButtonText: '⬅️ Back',
+                        cancelButtonColor: '#6C757D',
+                        showDenyButton: true,
+                        denyButtonText: 'Next ➡️',
+                        denyButtonColor: '#4ECDC4'
+                    };
+                } else {
+                    // Last step: Back + Ready
+                    buttons = {
+                        showConfirmButton: true,
+                        confirmButtonText: '🚗 Ready to Race!',
+                        confirmButtonColor: '#4ECDC4',
+                        showCancelButton: true,
+                        cancelButtonText: '⬅️ Back',
+                        cancelButtonColor: '#6C757D',
+                        showDenyButton: false
+                    };
+                }
+                
+                Swal.fire({
+                    title: '🎓 Learn to Race!',
+                    html: content[step - 1],
+                    ...buttons,
+                    width: '95%',
+                    maxWidth: '600px',
+                    padding: '15px',
+                    background: 'white',
+                    heightAuto: false,
+                    customClass: {
+                        popup: 'swal-no-scroll',
+                        htmlContainer: 'swal-compact-content'
+                    },
+                    showClass: { popup: 'animate__animated animate__zoomIn animate__faster' },
+                    hideClass: { popup: 'animate__animated animate__zoomOut animate__faster' }
+                }).then((result) => {
+                    if (result.isDenied && step < 3) {
+                        sfxClick.currentTime = 0;
+                        sfxClick.play();
+                        step++;
+                        showStep();
+                    } else if (result.isDismissed) {
+                        if (step === 1) {
+                            sfxClick.currentTime = 0;
+                            sfxClick.play();
+                            // Back to main menu from first step
+                            return;
+                        } else if (step > 1) {
+                            // Back to previous step
+                            sfxClick.currentTime = 0;
+                            sfxClick.play();
+                            step--;
+                            showStep();
+                        }
+                    } else if (result.isConfirmed && step === 3) {
+                        sfxClick.currentTime = 0;
+                        sfxClick.play();
+                        // Ready to race - show mode selection
+                        showModeSelection();
+                    }
+                });
+            };
+            showStep();
+        }
+        
+        function showModeSelection() {
+            playBGM();
+            sfxClick.currentTime = 0;
+            sfxClick.play();
+            Swal.fire({
+                title: '🎯 Choose Your Speed!',
+                html: `
+                    <div style="text-align: center; color: #333; padding: 10px; max-height: 70vh; overflow: hidden;">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px; margin-bottom: 20px;">
+                            <div style="background: linear-gradient(135deg, #e0f2fe, #b3e5fc); padding: 15px; border-radius: 12px; border: 2px solid #0288d1;">
+                                <div style="font-size: 2.5em; margin-bottom: 8px;">😊</div>
+                                <div style="font-weight: bold; color: #01579b; font-size: 1.1em;">Easy</div>
+                                <div style="font-size: 0.85em; color: #666;">Slow & Fun</div>
+                            </div>
+                            <div style="background: linear-gradient(135deg, #fef3c7, #fde68a); padding: 15px; border-radius: 12px; border: 2px solid #f59e0b;">
+                                <div style="font-size: 2.5em; margin-bottom: 8px;">😎</div>
+                                <div style="font-weight: bold; color: #92400e; font-size: 1.1em;">Medium</div>
+                                <div style="font-size: 0.85em; color: #666;">A Bit Tricky</div>
+                            </div>
+                            <div style="background: linear-gradient(135deg, #fee2e2, #fecaca); padding: 15px; border-radius: 12px; border: 2px solid #ef4444;">
+                                <div style="font-size: 2.5em; margin-bottom: 8px;">🤯</div>
+                                <div style="font-weight: bold; color: #dc2626; font-size: 1.1em;">Hard</div>
+                                <div style="font-size: 0.85em; color: #666;">Super Fast</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 10px; align-items: center;">
+                            <button onclick="selectMode('easy')" style="
+                                padding: 12px 30px; background: linear-gradient(45deg, #4ECDC4, #44A08D); color: white;
+                                border: none; border-radius: 25px; font-size: 1em; font-weight: bold; cursor: pointer;
+                                transition: all 0.3s ease; width: 200px; text-transform: uppercase; letter-spacing: 1px;
+                                box-shadow: 0 4px 15px rgba(0,0,0,0.2);"
+                                onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                                😊 Easy Mode
+                            </button>
+                            <button onclick="selectMode('medium')" style="
+                                padding: 12px 30px; background: linear-gradient(45deg, #FFA726, #FF7043); color: white;
+                                border: none; border-radius: 25px; font-size: 1em; font-weight: bold; cursor: pointer;
+                                transition: all 0.3s ease; width: 200px; text-transform: uppercase; letter-spacing: 1px;
+                                box-shadow: 0 4px 15px rgba(0,0,0,0.2);"
+                                onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                                😎 Medium Mode
+                            </button>
+                            <button onclick="selectMode('hard')" style="
+                                padding: 12px 30px; background: linear-gradient(45deg, #E53E3E, #C53030); color: white;
+                                border: none; border-radius: 25px; font-size: 1em; font-weight: bold; cursor: pointer;
+                                transition: all 0.3s ease; width: 200px; text-transform: uppercase; letter-spacing: 1px;
+                                box-shadow: 0 4px 15px rgba(0,0,0,0.2);"
+                                onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                                🤯 Hard Mode
+                            </button>
+                        </div>
+                        <div style="margin-top: 15px; font-size: 0.9em; color: #666;">
+                            💡 <strong>Start with Easy!</strong>
+                        </div>
+                    </div>`,
+                showConfirmButton: false,
+                showCancelButton: true,
+                cancelButtonText: '⬅️ Back',
+                cancelButtonColor: '#6C757D',
+                width: '95%',
+                maxWidth: '500px',
+                padding: '15px',
+                background: 'white',
+                heightAuto: false,
+                showClass: { popup: 'animate__animated animate__fadeInUp animate__faster' },
+                hideClass: { popup: 'animate__animated animate__fadeOutDown animate__faster' }
+                }).then((result) => {
+        if (result.isDismissed) {
+            // INI BARU BUNYI PAS BACK
+            sfxClick.currentTime = 0;
+            sfxClick.play();
+            // Kembali ke menu utama atau tutorial, terserah logic kamu
+        }
+
+            });
+        }
+        
+        function selectMode(mode) {
+            sfxClick.currentTime = 0;
+            sfxClick.play();
+            Swal.close();
+            Swal.fire({
+                
+                title: '🚀 Starting Race...',
+                html: `
+                    <div style="font-size: 1.1em; color: #333;">
+                        <h3>Mode: <span style="color: #4ECDC4;">${mode.toUpperCase()}</span></h3><br>
+                        <div style="margin: 10px 0;">⏗️ <span>Getting your car...</span></div>
+                        <div style="font-size: 0.9em; color: #444; opacity: 0.7;">Make sure your camera is ON!</div>
+                    </div>
+                `,
+                timer: 3000,
+                timerProgressBar: true,
+                showConfirmButton: false,
+                allowOutsideClick: false,
+                background: 'linear-gradient(45deg, #4ECDC4, #44A08D)',
+                color: '#ffffff',
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            }).then(() => {
+                let targetPage = '';
+                switch (mode) {
+                    case 'easy':
+                        targetPage = 'easyMode.html';
+                        break;
+                    case 'medium':
+                        targetPage = 'mediumMode.html';
+                        break;
+                    case 'hard':
+                        targetPage = 'hardMode.html';
+                        break;
+                    default:
+                        targetPage = 'game.html';
+                }
+                window.location.href = targetPage;
+            });
+        }
+        document.body.addEventListener('click', playBGM);
+        document.body.addEventListener('keydown', playBGM);
+        document.body.addEventListener('touchstart', playBGM);
+        document.body.addEventListener('pointerdown', playBGM); 
+        
+        window.addEventListener('DOMContentLoaded', () => {
+            const container = document.querySelector('.welcome-container');
+            container.style.opacity = '0';
+            container.style.transform = 'translateY(20px)';
+            container.style.transition = 'all 0.6s ease-out';
+            requestAnimationFrame(() => {
+                setTimeout(() => {
+                    container.style.opacity = '1';
+                    container.style.transform = 'translateY(0)';
+                }, 100);
+            });
+        });
+    </script>
+</body>
+</html>
